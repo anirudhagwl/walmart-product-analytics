@@ -496,8 +496,8 @@ class AnalyticsEngine(DataProcessor):
 
         Demonstrates: boolean indexing, dictionary building, comparison.
         """
-        discounted = self._df[self._df["has_discount"] == True]
-        non_discounted = self._df[self._df["has_discount"] == False]
+        discounted = self._df[self._df["has_discount"]]
+        non_discounted = self._df[~self._df["has_discount"]]
 
         analysis = {
             "discounted_products": len(discounted),

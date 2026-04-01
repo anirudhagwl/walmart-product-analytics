@@ -7842,10 +7842,10 @@ a.anchor-link {
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Core libraries</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="c1"># Visualization</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">mticker</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 
 <span class="c1"># Statistics</span>
@@ -7875,6 +7875,9 @@ a.anchor-link {
 <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"whitegrid"</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"muted"</span><span class="p">,</span> <span class="n">font_scale</span><span class="o">=</span><span class="mf">1.1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.figsize"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.dpi"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># Create plots directory if it doesn't exist</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">"plots"</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">"All libraries loaded successfully."</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"pandas v</span><span class="si">{</span><span class="n">pd</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2"> | numpy v</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -7952,7 +7955,9 @@ Column Names:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The dataset contains <strong>1,000 products across 44 features</strong>, giving us a rich multi-dimensional view of Walmart's product catalog. At ~9 MB in memory, this is a manageable dataset that fits entirely in RAM, making pandas a suitable tool for the analysis.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -8414,6 +8419,7 @@ memory usage: 330.2+ KB
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> Missing values reveal clear data quality patterns:</p>
 <ul>
 <li><strong><code>aisle</code> (95% missing)</strong> and <strong><code>unit_price</code> / <code>unit</code> (89.9% missing)</strong> are largely unpopulated — these fields are likely only applicable to grocery/consumable items, not the full catalog.</li>
@@ -8422,6 +8428,7 @@ memory usage: 330.2+ KB
 <li><strong><code>free_returns</code> (2.5% missing)</strong> and other low-missing columns can be easily imputed.</li>
 </ul>
 <p>This tells us Walmart's data schema is <strong>designed for all product types</strong>, so many fields are intentionally sparse for non-applicable categories.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -8433,8 +8440,10 @@ memory usage: 330.2+ KB
 <div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Quick statistical summary of numeric columns</span>
-<span class="n">df_raw</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Quick statistical summary of numeric columns (excluding ID fields)</span>
+<span class="n">numeric_summary_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"final_price"</span><span class="p">,</span> <span class="s2">"rating"</span><span class="p">,</span> <span class="s2">"review_count"</span><span class="p">,</span> <span class="s2">"initial_price"</span><span class="p">,</span> <span class="s2">"unit_price"</span><span class="p">]</span>
+<span class="n">existing_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">numeric_summary_cols</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df_raw</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+<span class="n">df_raw</span><span class="p">[</span><span class="n">existing_cols</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -8466,14 +8475,10 @@ memory usage: 330.2+ KB
 <tr style="text-align: right;">
 <th></th>
 <th>final_price</th>
-<th>sku</th>
-<th>gtin</th>
-<th>review_count</th>
-<th>product_id</th>
-<th>upc</th>
 <th>rating</th>
-<th>unit_price</th>
+<th>review_count</th>
 <th>initial_price</th>
+<th>unit_price</th>
 </tr>
 </thead>
 <tbody>
@@ -8481,97 +8486,65 @@ memory usage: 330.2+ KB
 <th>count</th>
 <td>1,000.00</td>
 <td>1,000.00</td>
-<td>999.00</td>
 <td>1,000.00</td>
-<td>1,000.00</td>
-<td>999.00</td>
-<td>1,000.00</td>
-<td>101.00</td>
 <td>898.00</td>
+<td>101.00</td>
 </tr>
 <tr>
 <th>mean</th>
 <td>37.99</td>
-<td>2,203,601,433.10</td>
-<td>578,676,849,383.40</td>
-<td>465.03</td>
-<td>2,203,601,433.10</td>
-<td>578,676,849,383.40</td>
 <td>4.34</td>
-<td>12.23</td>
+<td>465.03</td>
 <td>61.54</td>
+<td>12.23</td>
 </tr>
 <tr>
 <th>std</th>
 <td>97.48</td>
-<td>1,987,681,068.76</td>
-<td>264,068,562,528.44</td>
-<td>2,049.84</td>
-<td>1,987,681,068.76</td>
-<td>264,068,562,528.44</td>
 <td>0.70</td>
-<td>30.48</td>
+<td>2,049.84</td>
 <td>165.32</td>
+<td>30.48</td>
 </tr>
 <tr>
 <th>min</th>
 <td>0.91</td>
-<td>10,291,017.00</td>
-<td>11,111,017,337.00</td>
 <td>1.00</td>
-<td>10,291,017.00</td>
-<td>11,111,017,337.00</td>
 <td>1.00</td>
-<td>0.08</td>
 <td>1.58</td>
+<td>0.08</td>
 </tr>
 <tr>
 <th>25%</th>
 <td>13.96</td>
-<td>557,683,340.50</td>
-<td>462,022,540,207.50</td>
-<td>9.00</td>
-<td>557,683,340.50</td>
-<td>462,022,540,207.50</td>
 <td>4.20</td>
-<td>0.62</td>
+<td>9.00</td>
 <td>19.99</td>
+<td>0.62</td>
 </tr>
 <tr>
 <th>50%</th>
 <td>19.99</td>
-<td>1,446,915,619.00</td>
-<td>702,401,828,213.00</td>
-<td>47.00</td>
-<td>1,446,915,619.00</td>
-<td>702,401,828,213.00</td>
 <td>4.50</td>
-<td>1.81</td>
+<td>47.00</td>
 <td>33.59</td>
+<td>1.81</td>
 </tr>
 <tr>
 <th>75%</th>
 <td>35.97</td>
-<td>3,769,057,946.25</td>
-<td>765,144,893,654.00</td>
-<td>206.50</td>
-<td>3,769,057,946.25</td>
-<td>765,144,893,654.00</td>
 <td>4.70</td>
-<td>10.50</td>
+<td>206.50</td>
 <td>55.00</td>
+<td>10.50</td>
 </tr>
 <tr>
 <th>max</th>
 <td>1,685.99</td>
-<td>6,925,859,211.00</td>
-<td>993,188,127,556.00</td>
-<td>43,691.00</td>
-<td>6,925,859,211.00</td>
-<td>993,188,127,556.00</td>
 <td>5.00</td>
-<td>199.25</td>
+<td>43,691.00</td>
 <td>2,629.99</td>
+<td>199.25</td>
 </tr>
 </tbody>
 </table>
@@ -8627,12 +8600,14 @@ currency: 1 unique values
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> <strong>Zero duplicate product IDs</strong> confirms data integrity — each row is a unique product listing. The catalog is dominated by a few large categories:</p>
 <ul>
 <li><strong>505 unique brands</strong> across <strong>23 root categories</strong> and <strong>452 sub-categories</strong> indicates high brand diversity.</li>
 <li><strong>370 unique sellers</strong> shows a healthy marketplace model with many third-party sellers alongside Walmart's own listings.</li>
 <li>All products use <strong>USD</strong> currency, confirming this is US-market data.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -8806,12 +8781,14 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> After cleaning, we expanded the dataset from <strong>44 to 55 columns</strong> by engineering 11 new features. Key observations:</p>
 <ul>
 <li>Only <strong>8 products</strong> are flagged as price outliers by the IQR method — these are high-ticket items (e.g., patio furniture, seasonal items) that we'll keep but flag for separate analysis.</li>
 <li><strong>89.8% of products (898) carry a discount</strong>, meaning discounting is a near-universal strategy in Walmart's online catalog.</li>
 <li>All critical columns (<code>final_price</code>, <code>rating</code>, <code>review_count</code>, <code>brand</code>) now have <strong>zero null values</strong>, ensuring downstream analytics are reliable.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -8885,6 +8862,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The pricing data tells a compelling story:</p>
 <ul>
 <li>The <strong>mean ($38.00) is nearly double the median ($19.99)</strong>, a classic sign of <strong>right-skewed distribution</strong> — a few expensive products pull the average up significantly.</li>
@@ -8892,6 +8870,7 @@ Key Column Data Types:
 <li>A <strong>coefficient of variation of 256.6%</strong> indicates extreme price variability — the standard deviation ($97.48) is 2.5x the mean itself.</li>
 <li><strong>Skewness of 13.45</strong> (highly positive) and <strong>kurtosis of 211.24</strong> (extreme leptokurtic) confirm the distribution has a long right tail with sharp peaks. This means the median is a more reliable "typical price" than the mean for this dataset.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -8949,6 +8928,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> Ratings paint a very different picture from pricing:</p>
 <ul>
 <li>The <strong>mean rating is 4.34/5.0</strong> and <strong>median is 4.5</strong> — customers are generally very satisfied.</li>
@@ -8957,6 +8937,7 @@ Key Column Data Types:
 <li>The <strong>IQR is just 0.5</strong> (4.2 to 4.7), showing ratings are tightly clustered. The low coefficient of variation (16.2%) confirms minimal spread.</li>
 <li>Only products with ratings <strong>below 3.0</strong> are genuinely problematic, and these are statistical outliers in this dataset.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9249,6 +9230,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> Category-level analysis reveals significant market concentration:</p>
 <ul>
 <li><strong>Clothing dominates</strong> with 594 products (59.4% of the catalog) at a modest avg price of $22.85, making it Walmart's volume play.</li>
@@ -9257,6 +9239,7 @@ Key Column Data Types:
 <li>Niche categories like <strong>Electronics (1 product)</strong>, <strong>Seasonal (1 product at $599)</strong>, and <strong>Subscriptions (1 product at $111.62)</strong> are underrepresented in this sample.</li>
 <li><strong>Beauty products</strong> are affordable (avg $15.33) but with only 31 products, suggesting this sample captures only a slice of that category.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9317,6 +9300,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The composite performance score (weighted: 40% rating, 35% reviews, 25% product count) reveals interesting brand dynamics:</p>
 <ul>
 <li><strong>Parent's Choice</strong> tops the ranking with a single product that has a massive <strong>43,691 reviews</strong> — this is likely a viral household essential with enormous customer reach.</li>
@@ -9325,6 +9309,7 @@ Key Column Data Types:
 <li>Brands like <strong>Fantaslook</strong> and <strong>Hanes</strong> leverage large product lines (12 and 9 products) with aggressive discounting (63.2% and 29.9%) to drive volume.</li>
 <li>The ranking shows that <strong>review volume matters more than product count</strong> — brands with fewer products but viral bestsellers outperform those with larger but less-reviewed catalogs.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9364,7 +9349,7 @@ Key Column Data Types:
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
 <span class="c1"># Without outliers</span>
-<span class="n">df_no_outlier</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"final_price_outlier"</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">]</span>
+<span class="n">df_no_outlier</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="s2">"final_price_outlier"</span><span class="p">]]</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df_no_outlier</span><span class="p">[</span><span class="s2">"final_price"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#2ecc71"</span><span class="p">,</span>
              <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"white"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">df_no_outlier</span><span class="p">[</span><span class="s2">"final_price"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span>
@@ -9403,7 +9388,9 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The price histograms visually confirm the right-skewed distribution we detected statistically. The left chart shows a long tail stretching past $1,000, dragging the mean far from the median. After removing just 8 IQR-flagged outliers (right chart), the distribution becomes much more interpretable — the bulk of products are priced between **$5 and $50**, with a clear concentration around the $10-$20 range. This is consistent with Walmart's value-oriented market positioning.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9470,7 +9457,9 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The rating histogram confirms a strong <strong>negative skew</strong> — the vast majority of products are rated between 4.0 and 5.0. The category breakdown shows that <strong>535 products (53.5%) are rated "Excellent" (4.5+)</strong> and <strong>314 (31.4%) are "Good" (4.0-4.5)</strong>. Only <strong>33 products (3.3%) fall "Below Average"</strong> (under 3.0). This suggests Walmart's platform naturally filters out poorly-rated products, or that customer expectations are being met across most categories.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9530,12 +9519,14 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The side-by-side comparison reveals an important business dynamic:</p>
 <ul>
 <li><strong>Clothing leads in product count</strong> but has a relatively low average price — Walmart's strategy here is clearly <strong>volume-driven</strong>.</li>
 <li><strong>Patio &amp; Garden</strong> has the fewest products among the top categories but the <strong>highest average price by far</strong>, representing a <strong>high-value, low-volume</strong> segment.</li>
 <li><strong>Home</strong> sits in the middle — strong in both count and pricing, making it potentially the <strong>highest revenue category</strong> per-product.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9595,7 +9586,9 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The pie chart shows <strong>59.3% of products are "Budget" (under $25)</strong> and <strong>32.1% are "Mid-Range" ($25-$75)</strong> — together accounting for over 91% of the catalog. Only <strong>7.2% are Premium</strong> and <strong>1.4% are Luxury</strong>. The box plot on the right shows that <strong>price tier does not strongly influence ratings</strong> — Budget and Luxury products are rated similarly, suggesting Walmart customers judge value relative to price paid, not absolute quality.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9648,7 +9641,9 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The scatter plot reveals <strong>no strong linear relationship between price and rating</strong> — highly-rated products exist at every price point. However, the color gradient shows an interesting pattern: <strong>products with the highest review counts (darker red) tend to cluster in the lower price range ($10-$50)</strong>. This makes sense — affordable products reach more buyers, generating more reviews. Expensive products above $200 have fewer reviews but are not necessarily rated lower.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9702,7 +9697,9 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> Brand distribution follows a <strong>power law</strong> — a few brands have many products while most brands have very few. <strong>Amay's</strong> leads with 53 products, followed by home/bedding brands like <strong>TheLovely (20)</strong> and <strong>Bare Home (14)</strong>. The dominance of clothing and home brands in the top 15 reflects the overall dataset composition. Notably, well-known consumer brands (Hanes, Crocs, L'Oreal) appear with fewer products, suggesting they rely on brand recognition rather than catalog breadth.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9766,6 +9763,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The correlation heatmap reveals several important relationships:</p>
 <ul>
 <li><strong><code>final_price</code> and <code>initial_price</code> are almost perfectly correlated (0.98)</strong> — as expected, since discounts are proportional.</li>
@@ -9774,6 +9772,7 @@ Key Column Data Types:
 <li><strong><code>review_count</code> also shows no meaningful correlation with price or rating</strong> — popularity (in terms of reviews) is independent of price point.</li>
 <li><strong><code>num_colors</code> and <code>num_sizes</code> show weak correlations with everything</strong> — product variety options don't predict pricing or satisfaction.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9825,12 +9824,14 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The discount report reveals a <strong>counterintuitive finding</strong>:</p>
 <ul>
 <li><strong>Non-discounted products</strong> have a slightly higher average rating (4.46 vs 4.33) — discounting doesn't improve perceived quality.</li>
 <li>However, <strong>non-discounted products average 1,740 reviews vs only 320 for discounted ones</strong>. This is surprising — it suggests that the most popular, heavily-reviewed products (like viral bestsellers from Parent's Choice, Yankee Candle) often don't need discounts because demand is already organic.</li>
 <li>The <strong>average discount is 28.3%</strong> with a <strong>median of 23.1%</strong>, meaning most discounts are in the 20-30% range — significant enough to drive purchase decisions.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9845,7 +9846,7 @@ Key Column Data Types:
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># 6.3 Discount Distribution Analysis</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 
-<span class="n">discounted</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">]</span>
+<span class="n">discounted</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]]</span>
 
 <span class="c1"># Discount percentage distribution</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">discounted</span><span class="p">[</span><span class="s2">"discount_pct"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#e67e22"</span><span class="p">,</span>
@@ -9859,8 +9860,8 @@ Key Column Data Types:
 
 <span class="c1"># Discounted vs Non-Discounted: Rating comparison</span>
 <span class="n">disc_data</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">][</span><span class="s2">"rating"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">][</span><span class="s2">"rating"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]][</span><span class="s2">"rating"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span>
+    <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]][</span><span class="s2">"rating"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 <span class="p">]</span>
 <span class="n">bp</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">disc_data</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">"Discounted"</span><span class="p">,</span> <span class="s2">"Non-Discounted"</span><span class="p">],</span>
                      <span class="n">patch_artist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -9896,7 +9897,9 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The discount distribution histogram shows most discounts cluster between <strong>10-40%</strong>, with a secondary peak near <strong>60-70%</strong> (likely clearance or deep-discount items). The box plot comparison confirms the rating difference is <strong>small but visible</strong> — the median rating for both groups is similar (~4.5), but discounted products have more variance and more low-rating outliers. This could indicate that discounted products include lower-quality clearance items pulling the average down.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -9911,8 +9914,8 @@ Key Column Data Types:
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># 6.4 Statistical Hypothesis Testing</span>
 <span class="c1"># Test: Is there a significant difference in ratings between discounted and non-discounted products?</span>
 
-<span class="n">disc_ratings</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">][</span><span class="s2">"rating"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-<span class="n">non_disc_ratings</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">][</span><span class="s2">"rating"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="n">disc_ratings</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]][</span><span class="s2">"rating"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="n">non_disc_ratings</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="s2">"has_discount"</span><span class="p">]][</span><span class="s2">"rating"</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 
 <span class="c1"># Independent samples t-test</span>
 <span class="n">t_stat</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">disc_ratings</span><span class="p">,</span> <span class="n">non_disc_ratings</span><span class="p">,</span> <span class="n">equal_var</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -9983,6 +9986,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The statistical tests provide rigorous evidence:</p>
 <ul>
 <li><strong>Welch's t-test (p = 0.0019)</strong> finds a <strong>statistically significant</strong> difference in mean ratings between discounted and non-discounted products at the 5% significance level.</li>
@@ -9991,6 +9995,7 @@ Key Column Data Types:
 <li>The <strong>Shapiro-Wilk test</strong> confirms ratings are <strong>non-normally distributed</strong>, justifying our use of both parametric (t-test) and non-parametric (Mann-Whitney) tests.</li>
 </ul>
 <p><strong>Bottom line:</strong> Discounted products have slightly lower ratings on average, but the effect is too small to suggest that discounting itself hurts product quality perception.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -10270,6 +10275,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> Availability data reveals Walmart's <strong>delivery-first</strong> fulfillment strategy:</p>
 <ul>
 <li><strong>97.7% of products are available for delivery</strong> but only <strong>4.8% offer pickup</strong> — online delivery is the default channel.</li>
@@ -10278,6 +10284,7 @@ Key Column Data Types:
 <li><strong>Beauty (19.4% pickup)</strong> and <strong>Baby (23.1% pickup)</strong> show moderate in-store availability, likely stocked in physical Walmart stores.</li>
 <li>Categories like <strong>Patio &amp; Garden, Sports, and Jewelry show 0% pickup</strong> — these are exclusively online-fulfillment items.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -10342,7 +10349,9 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The grouped bar chart makes the delivery vs pickup gap visually striking. The blue bars (delivery) tower over the red bars (pickup) in almost every category. <strong>Food is the only category where pickup competes meaningfully with delivery</strong> — reflecting Walmart's investment in curbside grocery pickup. This visualization would be valuable for supply chain teams evaluating which categories could benefit from expanded pickup options.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -10409,6 +10418,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The bubble chart provides a <strong>multi-dimensional category comparison</strong> in a single view:</p>
 <ul>
 <li>Categories in the <strong>upper-left</strong> (high rating, low price) represent the best value propositions — these are where customers feel they get the most for their money.</li>
@@ -10416,6 +10426,7 @@ Key Column Data Types:
 <li><strong>Bubble size (total reviews)</strong> shows customer engagement — larger bubbles indicate categories where customers are most vocal, which often correlates with purchase volume.</li>
 <li>This chart helps identify which categories could benefit from pricing adjustments or quality improvements.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -10467,12 +10478,14 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The violin plots reveal the <strong>shape of price distributions</strong> within each category, not just averages:</p>
 <ul>
 <li><strong>Clothing</strong> has a tight, narrow distribution — most products are priced similarly (under $30), with very little spread.</li>
 <li><strong>Home</strong> has a wider distribution with a longer tail, indicating more price diversity — from affordable decor to premium furniture.</li>
 <li>The "waist" of each violin shows where most products concentrate, while the tails reveal how far prices stretch. Categories with wider violins have more pricing variety, offering options across multiple budget levels.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -10579,6 +10592,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> Product name text analysis reveals Walmart's <strong>SEO-driven naming strategy</strong>:</p>
 <ul>
 <li><strong>"Women" (325 occurrences)</strong> is the most frequent word, confirming the dataset skews heavily toward women's clothing/products.</li>
@@ -10587,6 +10601,7 @@ Key Column Data Types:
 <li>The <strong>average product name is 96.5 characters long</strong> — these are not simple names but keyword-rich descriptions optimized for Walmart's search algorithm.</li>
 <li>With <strong>2,669 unique words</strong> across 1,000 products, the vocabulary is diverse but follows a power-law distribution — a few words dominate while most appear rarely.</li>
 </ul>
+</blockquote>
 </div>
 </div>
 </div>
@@ -10598,7 +10613,7 @@ Key Column Data Types:
 <div class="jp-InputPrompt jp-InputArea-prompt">In [30]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># 8.2 Word Cloud Visualization of Product Names</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># 8.2 Top Words in Product Names (Horizontal Bar Chart)</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
 
 <span class="n">top_words</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">name_insights</span><span class="p">[</span><span class="s2">"top_words"</span><span class="p">][:</span><span class="mi">50</span><span class="p">])</span>
@@ -10644,7 +10659,9 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> The word frequency bar chart visually confirms the dominance of <strong>clothing-related terms</strong> (women, sleeve, neck, dress, casual) in the top 20. The presence of <strong>"pack"</strong> and <strong>"set"</strong> suggests multi-item bundles are common. Words like <strong>"cotton"</strong>, <strong>"bed"</strong>, and <strong>"sheet"</strong> represent the strong Home/Bedding segment. Sellers who want to improve product visibility should ensure these high-frequency keywords appear in their product titles.</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -10710,6 +10727,7 @@ Key Column Data Types:
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<blockquote>
 <p><strong>Insight:</strong> Review tags reveal <strong>what customers care about most</strong> when evaluating products:</p>
 <ul>
 <li><strong>Fit (429)</strong>, <strong>Size (407)</strong>, and <strong>Comfort (381)</strong> dominate — these are the top purchase concerns, especially for clothing-heavy datasets.</li>
@@ -10718,6 +10736,7 @@ Key Column Data Types:
 <li><strong>Appearance (372)</strong> being in the top 5 confirms that visual appeal matters — products should invest in accurate, attractive photography.</li>
 </ul>
 <p>For a product team, this data suggests that <strong>sizing guides, material descriptions, and accurate color representation</strong> are the highest-leverage areas for reducing negative reviews.</p>
+</blockquote>
 </div>
 </div>
 </div>
